@@ -25,9 +25,6 @@ namespace Encryption
         /// <param name="e"></param>
         private void btnRSAEncrypt_Click(object sender, EventArgs e)
         {
-            RSAHelper helper = new RSAHelper();
-            string text = txtText.Text.Trim();
-            txtText.Text = helper.Encrypt(text);
         }
 
         /// <summary>
@@ -37,9 +34,6 @@ namespace Encryption
         /// <param name="e"></param>
         private void btnRSADecrypt_Click(object sender, EventArgs e)
         {
-            RSAHelper helper = new RSAHelper();
-            string text = txtText.Text.Trim();
-            txtText.Text = helper.Decrypt(text);
         }
     }
 }

@@ -54,63 +54,45 @@ namespace RSA
         {
             s = s.Replace("\r", "").Replace("\n", "").Replace(" ", "");
             byte[] publicInfoByte = Convert.FromBase64String(s);
-            AsymmetricKeyParameter pubKey = PublicKeyFactory.CreateKey(publicInfoByte);
-            return pubKey;
+            return PublicKeyFactory.CreateKey(publicInfoByte);
         }
 
         private AsymmetricKeyParameter GetPrivateKeyParameter(string s)
         {
             s = s.Replace("\r", "").Replace("\n", "").Replace(" ", "");
             byte[] privateInfoByte = Convert.FromBase64String(s);
-            // Asn1Object priKeyObj = Asn1Object.FromByteArray(privateInfoByte);//这里也可以从流中读取，从本地导入   
-            // PrivateKeyInfo privateKeyInfo = PrivateKeyInfoFactory.CreatePrivateKeyInfo(privateKey);
-            AsymmetricKeyParameter priKey = PrivateKeyFactory.CreateKey(privateInfoByte);
-            return priKey;
+            return PrivateKeyFactory.CreateKey(privateInfoByte);
         }
 
         public string EncryptByPrivateKey(string s, string key)
         {
-            //非对称加密算法，加解密用  
             IAsymmetricBlockCipher engine = new Pkcs1Encoding(new RsaEngine());
-
-
-            //加密  
-
             try
             {
                 engine.Init(true, GetPrivateKeyParameter(key));
                 byte[] byteData = System.Text.Encoding.UTF8.GetBytes(s);
                 var ResultData = engine.ProcessBlock(byteData, 0, byteData.Length);
                 return Convert.ToBase64String(ResultData);
-                //Console.WriteLine("密文（base64编码）:" + Convert.ToBase64String(testData) + Environment.NewLine);
             }
             catch (Exception ex)
             {
                 return ex.Message;
-
             }
         }
         public string DecryptByPublicKey(string s, string key)
         {
             s = s.Replace("\r", "").Replace("\n", "").Replace(" ", "");
-            //非对称加密算法，加解密用  
             IAsymmetricBlockCipher engine = new Pkcs1Encoding(new RsaEngine());
-
-
-            //解密  
-
             try
             {
                 engine.Init(false, GetPublicKeyParameter(key));
                 byte[] byteData = Convert.FromBase64String(s);
                 var ResultData = engine.ProcessBlock(byteData, 0, byteData.Length);
                 return System.Text.Encoding.UTF8.GetString(ResultData);
-
             }
             catch (Exception ex)
             {
                 return ex.Message;
-
             }
         }
     }
