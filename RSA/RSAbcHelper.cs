@@ -64,6 +64,12 @@ namespace RSA
             return PrivateKeyFactory.CreateKey(privateInfoByte);
         }
 
+        /// <summary>
+        /// 私钥加密
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public string EncryptByPrivateKey(string s, string key)
         {
             IAsymmetricBlockCipher engine = new Pkcs1Encoding(new RsaEngine());
@@ -79,6 +85,35 @@ namespace RSA
                 return ex.Message;
             }
         }
+
+        /// <summary>
+        /// 公钥加密
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public string EncryptByPublicKey(string s, string key)
+        {
+            IAsymmetricBlockCipher engine = new Pkcs1Encoding(new RsaEngine());
+            try
+            {
+                engine.Init(true, GetPublicKeyParameter(key));
+                byte[] byteData = System.Text.Encoding.UTF8.GetBytes(s);
+                var ResultData = engine.ProcessBlock(byteData, 0, byteData.Length);
+                return Convert.ToBase64String(ResultData);
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        /// <summary>
+        /// 公钥解密
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public string DecryptByPublicKey(string s, string key)
         {
             s = s.Replace("\r", "").Replace("\n", "").Replace(" ", "");
@@ -86,6 +121,29 @@ namespace RSA
             try
             {
                 engine.Init(false, GetPublicKeyParameter(key));
+                byte[] byteData = Convert.FromBase64String(s);
+                var ResultData = engine.ProcessBlock(byteData, 0, byteData.Length);
+                return System.Text.Encoding.UTF8.GetString(ResultData);
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        /// <summary>
+        /// 私钥解密
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public string DecryptByPrivateKey(string s, string key)
+        {
+            s = s.Replace("\r", "").Replace("\n", "").Replace(" ", "");
+            IAsymmetricBlockCipher engine = new Pkcs1Encoding(new RsaEngine());
+            try
+            {
+                engine.Init(false, GetPrivateKeyParameter(key));
                 byte[] byteData = Convert.FromBase64String(s);
                 var ResultData = engine.ProcessBlock(byteData, 0, byteData.Length);
                 return System.Text.Encoding.UTF8.GetString(ResultData);
